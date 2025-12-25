@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen text-slate-100;
+}
+
+@layer components {
+  .card {
+    @apply bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 p-6 shadow-xl;
+  }
+
+  .card-title {
+    @apply text-lg font-semibold text-slate-100 mb-4 flex items-center gap-2;
+  }
+
+  .input-field {
+    @apply w-full bg-slate-700/50 border border-slate-600 rounded-lg px-4 py-2.5 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all;
+  }
+
+  .input-label {
+    @apply block text-sm font-medium text-slate-300 mb-1.5;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-primary-500 to-accent-500 hover:from-primary-600 hover:to-accent-600 text-white font-medium px-6 py-2.5 rounded-lg transition-all shadow-lg hover:shadow-primary-500/25;
+  }
+
+  .btn-secondary {
+    @apply bg-slate-700 hover:bg-slate-600 text-slate-100 font-medium px-4 py-2 rounded-lg transition-all;
+  }
+
+  .tab {
+    @apply px-6 py-3 font-medium text-slate-400 hover:text-slate-200 transition-colors relative;
+  }
+
+  .tab-active {
+    @apply text-primary-400;
+  }
+
+  .tab-active::after {
+    content: '';
+    @apply absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary-500 to-accent-500;
+  }
+
+  .result-value {
+    @apply text-5xl font-bold bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent;
+  }
+
+  .stat-box {
+    @apply bg-slate-700/30 rounded-lg p-3 text-center;
+  }
+
+  .stat-label {
+    @apply text-xs text-slate-400 uppercase tracking-wider;
+  }
+
+  .stat-value {
+    @apply text-lg font-semibold text-slate-100;
+  }
+
+  .radio-option {
+    @apply flex items-center gap-3 p-3 rounded-lg border border-slate-600 hover:border-primary-500/50 cursor-pointer transition-all;
+  }
+
+  .radio-option-selected {
+    @apply border-primary-500 bg-primary-500/10;
+  }
+}
