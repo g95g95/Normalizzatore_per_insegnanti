@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { normalize } from './normalization.js';
+import { normalize } from './normalization';
 
 describe('normalize', () => {
   // Test data: mu=30, sigma~5, x=34 => z=0.8

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(C:\\Users\\pisel\\Desktop\\Guloi\\Regalo_per_insegnanti\\**)",
+      "Write(C:\\Users\\pisel\\Desktop\\Guloi\\Regalo_per_insegnanti\\**)",
+      "Edit(C:\\Users\\pisel\\Desktop\\Guloi\\Regalo_per_insegnanti\\**)"
+    ]
+  }
+}

@@ -29,7 +29,6 @@ export default function Calculator() {
   const [result, setResult] = useState<NormalizeResponse | null>(null);
   const [bulkResult, setBulkResult] = useState<NormalizeBulkResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [parsedGrades, setParsedGrades] = useState<number[]>([]);
   const [parseErrors, setParseErrors] = useState<string[]>([]);
 
@@ -41,7 +40,7 @@ export default function Calculator() {
   }, [form.gradesText]);
 
   // Compute normalization (single + bulk)
-  const compute = useCallback(async () => {
+  const compute = useCallback(() => {
     if (parsedGrades.length < 2) {
       setError(parsedGrades.length === 0 ? null : t('needAtLeast2'));
       setResult(null);
@@ -56,7 +55,6 @@ export default function Calculator() {
       return;
     }
 
-    setLoading(true);
     setError(null);
 
     try {
@@ -67,7 +65,7 @@ export default function Calculator() {
       };
 
       // Always compute bulk normalization
-      const bulkResponse = await normalizeAllGrades(
+      const bulkResponse = normalizeAllGrades(
         parsedGrades,
         form.minGrade,
         form.maxGrade,
@@ -79,7 +77,7 @@ export default function Calculator() {
       // Compute single normalization if student score is provided
       const score = parseFloat(form.studentScore);
       if (!isNaN(score)) {
-        const response = await normalizeGrade(
+        const response = normalizeGrade(
           parsedGrades,
           score,
           form.minGrade,
@@ -95,8 +93,6 @@ export default function Calculator() {
       setError(err instanceof Error ? err.message : 'An error occurred');
       setResult(null);
       setBulkResult(null);
-    } finally {
-      setLoading(false);
     }
   }, [parsedGrades, form, t]);
 
@@ -174,7 +170,7 @@ export default function Calculator() {
       <ResultsCard
         result={result}
         error={error}
-        loading={loading}
+        loading={false}
         sourceScale={form.sourceScale}
       />
 

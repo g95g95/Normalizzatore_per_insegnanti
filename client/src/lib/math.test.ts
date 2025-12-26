@@ -8,7 +8,7 @@ import {
   percentileECDF,
   clamp,
   safePercentile,
-} from './math.js';
+} from './math';
 
 describe('mean', () => {
   it('calculates mean correctly', () => {

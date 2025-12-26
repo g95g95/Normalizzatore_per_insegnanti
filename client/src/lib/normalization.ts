@@ -11,20 +11,13 @@ import {
   percentileECDF,
   clamp,
   safePercentile,
-} from './math.js';
-import type { NormalizationMethod, PercentileMode, NormalizeDetails } from 'shared';
+} from './math';
+import type { NormalizationMethod, PercentileMode, NormalizeResponse, NormalizeBulkResponse, StatsResponse, NormalizeDetails } from '../types';
 
 interface NormalizationParams {
   k: number;
   alpha: number;
   percentileMode: PercentileMode;
-}
-
-interface NormalizationResult {
-  normalized: number;
-  clamped: boolean;
-  details: NormalizeDetails;
-  explanation: string;
 }
 
 /**
@@ -37,7 +30,7 @@ export function normalize(
   maxGrade: number,
   method: NormalizationMethod,
   params: NormalizationParams
-): NormalizationResult {
+): NormalizeResponse {
   const n = grades.length;
   const mu = mean(grades);
   const sigma = n >= 2 ? sampleStd(grades) : 0;
@@ -84,7 +77,7 @@ function normalizePercentileGaussian(
   mu: number,
   sigma: number,
   percentileMode: PercentileMode
-): NormalizationResult {
+): NormalizeResponse {
   const n = grades.length;
   const range = maxGrade - minGrade;
   const sortedGrades = [...grades].sort((a, b) => a - b);
@@ -154,7 +147,7 @@ function normalizeZLinear(
   mu: number,
   sigma: number,
   k: number
-): NormalizationResult {
+): NormalizeResponse {
   const n = grades.length;
   const range = maxGrade - minGrade;
 
@@ -202,7 +195,7 @@ function normalizeZTanh(
   mu: number,
   sigma: number,
   alpha: number
-): NormalizationResult {
+): NormalizeResponse {
   const n = grades.length;
   const range = maxGrade - minGrade;
 
@@ -237,5 +230,61 @@ function normalizeZTanh(
       g_raw,
     },
     explanation,
+  };
+}
+
+/**
+ * Normalize all grades in a dataset (bulk normalization)
+ */
+export function normalizeBulk(
+  grades: number[],
+  minGrade: number,
+  maxGrade: number,
+  method: NormalizationMethod,
+  params: NormalizationParams
+): NormalizeBulkResponse {
+  const n = grades.length;
+  const mu = mean(grades);
+  const sigma = n >= 2 ? sampleStd(grades) : 0;
+
+  const results = grades.map((original) => {
+    const result = normalize(grades, original, minGrade, maxGrade, method, params);
+    return {
+      original,
+      normalized: result.normalized,
+      clamped: result.clamped,
+    };
+  });
+
+  return {
+    results,
+    stats: {
+      mu,
+      sigma,
+      n,
+    },
+  };
+}
+
+/**
+ * Calculate statistics for a dataset
+ */
+export function calculateStats(grades: number[]): StatsResponse {
+  const n = grades.length;
+  if (n === 0) {
+    throw new Error('Cannot calculate stats of empty array');
+  }
+
+  const mu = mean(grades);
+  const sigma = n >= 2 ? sampleStd(grades) : null;
+  const sorted = [...grades].sort((a, b) => a - b);
+
+  return {
+    mu,
+    sigma,
+    n,
+    sorted,
+    min: sorted[0],
+    max: sorted[n - 1],
   };
 }
