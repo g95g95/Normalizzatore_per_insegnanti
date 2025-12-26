@@ -1,4 +1,4 @@
-# CLAUDE.md — Grade Normalization Web App (React, Frontend-Only)
+# CLAUDE.md — Grade Normalization Web App (React + Node.js)
 
 ## Goal
 
@@ -13,6 +13,7 @@ Build a simple-but-fancy web app that lets a user:
 4) Choose grade boundaries (e.g., 2–10, 1–9, 0–30, etc.).
 5) Instantly get the normalized grade + explanation.
 6) Open a "Theory behind" tab with clean math explanations for each method.
+7) Consult an AI chatbot for questions about grade normalization.
 
 Tone/UI: modern, minimal, a bit "fancy" (cards, tabs, charts), but still readable.
 
@@ -20,22 +21,22 @@ Tone/UI: modern, minimal, a bit "fancy" (cards, tabs, charts), but still readabl
 
 ## Stack & Project Layout
 
-- **Frontend-only architecture** (v2.0)
-- Monorepo with two folders:
+- **Hybrid architecture** (v2.1)
+- Monorepo with three folders:
   - `/client` React (Vite) + TypeScript (UI + math logic)
+  - `/server` Node.js + Express (AI chatbot API only)
   - `/shared` Zod schemas and types
 - Styling: TailwindCSS
 - Charts: Recharts
 - Validation: Zod
 - Testing: Vitest + React Testing Library
 
-### Why frontend-only?
+### Architecture Philosophy
 
-All math computations run directly in the browser. This provides:
-- **Zero latency** - no HTTP round trips
-- **Free hosting** - deploy as static site anywhere (Render, Netlify, Vercel, GitHub Pages)
-- **No cold starts** - instant response, always available
-- **Offline capable** - works without internet after initial load
+- **Math computations run in the browser** - zero latency, instant response
+- **Backend exists only for the AI chatbot** - secure API key handling
+- In production, the Express server serves the static frontend and provides the `/api/chat` endpoint
+- The chatbot is optional - if environment variables are not configured, the app works without it
 
 The math functions are in `client/src/lib/math.ts` and `client/src/lib/normalization.ts`, fully tested.
 
@@ -195,54 +196,80 @@ Run tests: `npm run test`
 - Toggle between Raw and Normalized distributions
 - Visual comparison of grade distributions before/after normalization
 
+### AI Chatbot
+- Floating chat button in bottom-right corner
+- Answers questions about grade normalization methods
+- Supports multiple LLM providers (OpenAI, Anthropic, Groq, Mistral)
+- Bilingual (English/Italian based on app language)
+- Gracefully disabled if environment variables not configured
+
+---
+
+## AI Chatbot Configuration
+
+The chatbot requires environment variables to function:
+
+| Variable | Description | Examples |
+|----------|-------------|----------|
+| `LLM_PROVIDER` | The LLM provider | `openai`, `anthropic`, `groq`, `mistral` |
+| `LLM_MODEL` | Model name | `gpt-3.5-turbo`, `claude-3-haiku-20240307`, `llama-3.1-70b-versatile` |
+| `LLM_API_KEY` | API key for the provider | `sk-...`, `sk-ant-...`, `gsk_...` |
+
+See `.env.example` for configuration templates.
+
+### Server Implementation
+
+Located in `/server/src/`:
+- `index.ts` - Express server with `/api/chat` endpoint and static file serving
+- `llm.ts` - LLM provider abstraction supporting OpenAI, Anthropic, Groq, Mistral
+
+The server includes a system prompt that instructs the AI to be a grade normalization expert.
+
 ---
 
 ## Deployment
 
-This is a **static site** - deploy anywhere that serves static files!
+This is a **web service** (Node.js) that also serves static files.
 
-### render.yaml Configuration (Static Site)
+### render.yaml Configuration
 
 ```yaml
 services:
-  - type: static
+  - type: web
     name: grade-alchemy
-    staticPublishPath: client/dist
+    env: node
+    region: frankfurt
+    plan: free
     buildCommand: npm install && npm run build
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: LLM_PROVIDER
+        sync: false
+      - key: LLM_MODEL
+        sync: false
+      - key: LLM_API_KEY
+        sync: false
+    healthCheckPath: /api/health
 ```
 
-### Deployment Options
+### Deployment on Render
 
-#### Render (Recommended)
 1. Push repository to GitHub/GitLab
-2. On Render: New > Static Site (or use Blueprint)
+2. On Render: New > Blueprint (or Web Service)
 3. Connect repository
-4. Build Command: `npm install && npm run build`
-5. Publish Directory: `client/dist`
+4. Configure environment variables for chatbot (optional)
+5. Deploy
 
-#### Netlify
-1. Connect repository
-2. Build Command: `npm install && npm run build`
-3. Publish Directory: `client/dist`
+### Environment Variables on Render
 
-#### Vercel
-1. Connect repository
-2. Framework Preset: Vite
-3. Output Directory: `client/dist`
+After deployment, set these in Render Dashboard > Environment:
+- `LLM_PROVIDER` - e.g., `openai`
+- `LLM_MODEL` - e.g., `gpt-3.5-turbo`
+- `LLM_API_KEY` - your API key
 
-#### GitHub Pages
-1. Build locally: `npm run build`
-2. Deploy `client/dist` folder
-
-### Benefits of Static Hosting
-- **Free tier** - no usage limits on most platforms
-- **No cold starts** - always instant
-- **Global CDN** - fast worldwide
-- **No server maintenance** - zero ops
+The chatbot will work once these are configured. Without them, the app functions normally but chat is disabled.
 
 ---
 
@@ -252,8 +279,14 @@ services:
 # Install dependencies
 npm install
 
-# Run development server
+# Run development servers (client + server concurrently)
 npm run dev
+
+# Run only client
+npm run dev:client
+
+# Run only server
+npm run dev:server
 
 # Run tests
 npm run test
@@ -261,6 +294,8 @@ npm run test
 # Build for production
 npm run build
 
-# Preview production build
-npm run preview
+# Start production server
+npm run start
 ```
+
+For local chatbot testing, create a `.env` file in the root directory based on `.env.example`.

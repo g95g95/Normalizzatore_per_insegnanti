@@ -1,9 +1,18 @@
 services:
-  - type: static
+  - type: web
     name: grade-alchemy
-    staticPublishPath: client/dist
+    env: node
+    region: frankfurt
+    plan: free
     buildCommand: npm install && npm run build
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: LLM_PROVIDER
+        sync: false
+      - key: LLM_MODEL
+        sync: false
+      - key: LLM_API_KEY
+        sync: false
+    healthCheckPath: /api/health

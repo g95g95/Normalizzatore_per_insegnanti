@@ -4,6 +4,7 @@ import Calculator from './components/Calculator';
 import TheoryTab from './components/TheoryTab';
 import AboutTab from './components/AboutTab';
 import LanguageSwitcher from './components/LanguageSwitcher';
+import ChatBot from './components/ChatBot';
 
 type Tab = 'calculator' | 'theory' | 'about';
 
@@ -60,6 +61,9 @@ function AppContent() {
           {t('footerText')}
         </div>
       </footer>
+
+      {/* ChatBot */}
+      <ChatBot />
     </div>
   );
 }
