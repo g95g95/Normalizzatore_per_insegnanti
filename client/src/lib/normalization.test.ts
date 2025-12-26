@@ -2,9 +2,6 @@ import { describe, it, expect } from 'vitest';
 import { normalize } from './normalization';
 
 describe('normalize', () => {
-  // Test data: mu=30, sigma~5, x=34 => z=0.8
-  const baseGrades = [25, 28, 30, 32, 35]; // mu=30
-
   describe('z_linear method', () => {
     it('calculates correctly with default k=2', () => {
       // Create dataset where we can control mu and sigma

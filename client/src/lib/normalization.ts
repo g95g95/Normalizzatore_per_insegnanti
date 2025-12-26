@@ -12,7 +12,7 @@ import {
   clamp,
   safePercentile,
 } from './math';
-import type { NormalizationMethod, PercentileMode, NormalizeResponse, NormalizeBulkResponse, StatsResponse, NormalizeDetails } from '../types';
+import type { NormalizationMethod, PercentileMode, NormalizeResponse, NormalizeBulkResponse, StatsResponse } from '../types';
 
 interface NormalizationParams {
   k: number;
