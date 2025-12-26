@@ -1,4 +1,5 @@
 import { GRADE_PRESETS } from 'shared';
+import { useLanguage } from '../i18n';
 
 interface Props {
   minGrade: number;
@@ -8,6 +9,8 @@ interface Props {
 }
 
 export default function BoundariesCard({ minGrade, maxGrade, onMinChange, onMaxChange }: Props) {
+  const { t } = useLanguage();
+
   const handlePreset = (preset: (typeof GRADE_PRESETS)[number]) => {
     onMinChange(preset.minGrade);
     onMaxChange(preset.maxGrade);
@@ -19,13 +22,13 @@ export default function BoundariesCard({ minGrade, maxGrade, onMinChange, onMaxC
         <svg className="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
         </svg>
-        Grade Boundaries
+        {t('gradeBoundaries')}
       </h2>
 
       <div className="space-y-4">
         {/* Presets */}
         <div>
-          <label className="input-label">Quick Presets</label>
+          <label className="input-label">{t('quickPresets')}</label>
           <div className="flex flex-wrap gap-2">
             {GRADE_PRESETS.map((preset) => (
               <button
@@ -46,7 +49,7 @@ export default function BoundariesCard({ minGrade, maxGrade, onMinChange, onMaxC
         {/* Manual Input */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="input-label">Min Grade</label>
+            <label className="input-label">{t('minGrade')}</label>
             <input
               type="number"
               value={minGrade}
@@ -56,7 +59,7 @@ export default function BoundariesCard({ minGrade, maxGrade, onMinChange, onMaxC
             />
           </div>
           <div>
-            <label className="input-label">Max Grade</label>
+            <label className="input-label">{t('maxGrade')}</label>
             <input
               type="number"
               value={maxGrade}
@@ -68,7 +71,7 @@ export default function BoundariesCard({ minGrade, maxGrade, onMinChange, onMaxC
         </div>
 
         {minGrade >= maxGrade && (
-          <p className="text-red-400 text-sm">Min grade must be less than max grade</p>
+          <p className="text-red-400 text-sm">{t('minLessThanMax')}</p>
         )}
       </div>
     </div>

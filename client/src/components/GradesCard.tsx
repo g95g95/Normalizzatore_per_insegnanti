@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { useLanguage } from '../i18n';
 
 interface Props {
   gradesText: string;
@@ -24,6 +25,7 @@ export default function GradesCard({
   sourceScale,
   onSourceScaleChange,
 }: Props) {
+  const { t } = useLanguage();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,13 +71,13 @@ export default function GradesCard({
         <svg className="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
-        Class Grades
+        {t('classGrades')}
       </h2>
 
       <div className="space-y-4">
         {/* Source Scale Selector */}
         <div>
-          <label className="input-label">Source grade scale (max possible score)</label>
+          <label className="input-label">{t('sourceGradeScale')}</label>
           <div className="flex flex-wrap gap-2 mb-2">
             {SOURCE_SCALE_PRESETS.map((preset) => (
               <button
@@ -90,7 +92,7 @@ export default function GradesCard({
             ))}
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-slate-400 text-sm">Custom:</span>
+            <span className="text-slate-400 text-sm">{t('customScale')}</span>
             <input
               type="number"
               value={sourceScale}
@@ -99,13 +101,13 @@ export default function GradesCard({
               min="1"
               step="any"
             />
-            <span className="text-slate-400 text-sm">points max</span>
+            <span className="text-slate-400 text-sm">{t('pointsMax')}</span>
           </div>
         </div>
 
         {/* File Upload */}
         <div>
-          <label className="input-label">Upload grades from file</label>
+          <label className="input-label">{t('uploadFromFile')}</label>
           <div
             onDrop={handleDrop}
             onDragOver={handleDragOver}
@@ -123,17 +125,17 @@ export default function GradesCard({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
             </svg>
             <p className="text-slate-400 text-sm">
-              Drag & drop a file here, or <span className="text-primary-400">click to browse</span>
+              {t('dragAndDrop')} <span className="text-primary-400">{t('clickToBrowse')}</span>
             </p>
             <p className="text-slate-500 text-xs mt-1">
-              Supports .txt, .csv and any text file
+              {t('supportsFiles')}
             </p>
           </div>
         </div>
 
         {/* Manual Input */}
         <div>
-          <label className="input-label">Or paste grades manually (comma, space, or newline separated)</label>
+          <label className="input-label">{t('orPasteManually')}</label>
           <textarea
             value={gradesText}
             onChange={(e) => onChange(e.target.value)}
@@ -148,30 +150,30 @@ export default function GradesCard({
             {parsedCount > 0 ? (
               <>
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-primary-500/20 text-primary-300">
-                  {parsedCount} grades parsed
+                  {parsedCount} {t('gradesParsed')}
                 </span>
                 <span className="text-slate-400">
-                  (scale: /{sourceScale})
+                  ({t('scale')}: /{sourceScale})
                 </span>
                 {parsedCount < 2 && (
-                  <span className="text-amber-400">Need at least 2 grades</span>
+                  <span className="text-amber-400">{t('needAtLeast2')}</span>
                 )}
               </>
             ) : (
-              <span className="text-slate-400">Enter grades to begin</span>
+              <span className="text-slate-400">{t('enterGradesToBegin')}</span>
             )}
           </div>
         </div>
 
         {parseErrors.length > 0 && (
           <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3">
-            <p className="text-red-400 text-sm font-medium mb-1">Parse errors:</p>
+            <p className="text-red-400 text-sm font-medium mb-1">{t('parseErrors')}</p>
             <ul className="text-red-300 text-sm space-y-0.5">
               {parseErrors.slice(0, 5).map((err, i) => (
                 <li key={i}>{err}</li>
               ))}
               {parseErrors.length > 5 && (
-                <li>...and {parseErrors.length - 5} more</li>
+                <li>...{t('andMore').replace('{count}', String(parseErrors.length - 5))}</li>
               )}
             </ul>
           </div>

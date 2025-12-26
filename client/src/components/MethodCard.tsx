@@ -1,4 +1,6 @@
 import type { NormalizationMethod, PercentileMode } from '../types';
+import { useLanguage } from '../i18n';
+import type { TranslationKey } from '../i18n/translations';
 
 interface Props {
   method: NormalizationMethod;
@@ -11,24 +13,6 @@ interface Props {
   onPercentileModeChange: (value: PercentileMode) => void;
 }
 
-const methods: { value: NormalizationMethod; label: string; description: string }[] = [
-  {
-    value: 'percentile_gaussian',
-    label: 'Percentile + Gaussian',
-    description: 'Maps percentile through normal distribution',
-  },
-  {
-    value: 'z_linear',
-    label: 'Linear Z-Score',
-    description: 'Linear mapping of z-scores to grade range',
-  },
-  {
-    value: 'z_tanh',
-    label: 'Tanh Z-Score',
-    description: 'Squashed mapping, robust against outliers',
-  },
-];
-
 export default function MethodCard({
   method,
   k,
@@ -39,13 +23,33 @@ export default function MethodCard({
   onAlphaChange,
   onPercentileModeChange,
 }: Props) {
+  const { t } = useLanguage();
+
+  const methods: { value: NormalizationMethod; labelKey: TranslationKey; descKey: TranslationKey }[] = [
+    {
+      value: 'percentile_gaussian',
+      labelKey: 'percentileGaussian',
+      descKey: 'percentileGaussianDesc',
+    },
+    {
+      value: 'z_linear',
+      labelKey: 'linearZScore',
+      descKey: 'linearZScoreDesc',
+    },
+    {
+      value: 'z_tanh',
+      labelKey: 'tanhZScore',
+      descKey: 'tanhZScoreDesc',
+    },
+  ];
+
   return (
     <div className="card">
       <h2 className="card-title">
         <svg className="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
         </svg>
-        Normalization Method
+        {t('normalizationMethod')}
       </h2>
 
       <div className="space-y-4">
@@ -69,8 +73,8 @@ export default function MethodCard({
                 )}
               </div>
               <div>
-                <div className="font-medium text-slate-100">{m.label}</div>
-                <div className="text-xs text-slate-400">{m.description}</div>
+                <div className="font-medium text-slate-100">{t(m.labelKey)}</div>
+                <div className="text-xs text-slate-400">{t(m.descKey)}</div>
               </div>
             </button>
           ))}
@@ -81,7 +85,7 @@ export default function MethodCard({
           {method === 'z_linear' && (
             <div>
               <label className="input-label">
-                k (sigma span): {k}
+                {t('sigmaSpan')}: {k}
               </label>
               <input
                 type="range"
@@ -93,7 +97,7 @@ export default function MethodCard({
                 className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-primary-500"
               />
               <p className="text-xs text-slate-400 mt-1">
-                z = -{k} maps to min grade, z = +{k} maps to max grade
+                {t('sigmaSpanDesc').replace('{k}', String(k)).replace('{k}', String(k))}
               </p>
             </div>
           )}
@@ -101,7 +105,7 @@ export default function MethodCard({
           {method === 'z_tanh' && (
             <div>
               <label className="input-label">
-                Alpha (squash strength): {alpha}
+                {t('squashStrength')}: {alpha}
               </label>
               <input
                 type="range"
@@ -113,14 +117,14 @@ export default function MethodCard({
                 className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-primary-500"
               />
               <p className="text-xs text-slate-400 mt-1">
-                Higher alpha = more aggressive squashing of extremes
+                {t('squashStrengthDesc')}
               </p>
             </div>
           )}
 
           {method === 'percentile_gaussian' && (
             <div>
-              <label className="input-label">Percentile Mode</label>
+              <label className="input-label">{t('percentileMode')}</label>
               <div className="flex gap-3">
                 <button
                   onClick={() => onPercentileModeChange('empirical')}
@@ -138,8 +142,8 @@ export default function MethodCard({
                     )}
                   </div>
                   <div>
-                    <div className="font-medium text-slate-100">Empirical (ECDF)</div>
-                    <div className="text-xs text-slate-400">Use actual class distribution</div>
+                    <div className="font-medium text-slate-100">{t('empiricalECDF')}</div>
+                    <div className="text-xs text-slate-400">{t('useActualDistribution')}</div>
                   </div>
                 </button>
                 <button
@@ -158,8 +162,8 @@ export default function MethodCard({
                     )}
                   </div>
                   <div>
-                    <div className="font-medium text-slate-100">Gaussian Assumed</div>
-                    <div className="text-xs text-slate-400">Assume normal distribution</div>
+                    <div className="font-medium text-slate-100">{t('gaussianAssumed')}</div>
+                    <div className="text-xs text-slate-400">{t('assumeNormalDistribution')}</div>
                   </div>
                 </button>
               </div>
