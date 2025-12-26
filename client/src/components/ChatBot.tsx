@@ -1,6 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '../i18n';
 
+// API URL: use environment variable or relative path (for same-origin deployment)
+const API_URL = import.meta.env.VITE_API_URL || '';
+
 interface Message {
   role: 'user' | 'assistant';
   content: string;
@@ -40,7 +43,7 @@ export default function ChatBot() {
     setError(null);
 
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch(`${API_URL}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
